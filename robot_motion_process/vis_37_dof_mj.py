@@ -111,7 +111,7 @@ def main(cfg : DictConfig) -> None:
 
 
     humanoid_xml = "./description/robots/g1/g1.xml"
-    print(humanoid_xml)
+    print("use xml: ", humanoid_xml)
     
     vis_smpl = False if 'vis_smpl' not in cfg else cfg.vis_smpl
     vis_tau_key = 'tau' if 'vis_tau_key' not in cfg else cfg.vis_tau_key
@@ -123,7 +123,7 @@ def main(cfg : DictConfig) -> None:
     if vis_contact: assert 'contact_mask' in curr_motion and not vis_tau
 
     if not vis_smpl:
-        cfg_robot = OmegaConf.load("description/robots/g1/phc_g1_23dof.yaml")
+        cfg_robot = OmegaConf.load("description/robots/g1/phc_g1_34dof.yaml")
         humanoid_fk = Humanoid_Batch(cfg_robot)  # load forward kinematics model
         pose_aa = torch.from_numpy(curr_motion['pose_aa']).unsqueeze(0)
         root_trans = torch.from_numpy(curr_motion['root_trans_offset']).unsqueeze(0)
@@ -179,7 +179,7 @@ def main(cfg : DictConfig) -> None:
                     for i in range(joint_gt.shape[1]):
                         viewer.user_scn.geoms[i].pos = joint_gt[curr_time, i]
             else:
-                for i in range(23):
+                for i in range(37):
                     viewer.user_scn.geoms[i+1].pos = joint_gt[curr_time, i+1]
             
             if vis_contact: 
@@ -188,7 +188,7 @@ def main(cfg : DictConfig) -> None:
                 
             if vis_tau:
                 scale_factor = 0.1
-                for i in range(23):
+                for i in range(37):
                     tau = curr_motion[vis_tau_key][curr_time, i]
                     color_gradient = abs(tau) * scale_factor
                     if tau > 0:

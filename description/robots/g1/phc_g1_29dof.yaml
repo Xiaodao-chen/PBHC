@@ -1,0 +1,116 @@
+# g1_29dof.yaml
+humanoid_type: g1_29dof_rev_1_0
+bias_offset: False
+has_self_collision: True
+has_mesh: False
+has_jt_limit: False
+has_dof_subset: False         # 23dof -> 29dof: 这里关掉子集
+has_upright_start: True
+has_smpl_pd_offset: False
+remove_toe: False
+motion_sym_loss: False
+sym_loss_coef: 1
+big_ankle: True
+
+has_shape_obs: false
+has_shape_obs_disc: false
+has_shape_variation: False
+
+masterfoot: False
+freeze_toe: false
+freeze_hand: False
+box_body: True
+real_weight: True
+real_weight_porpotion_capsules: True
+real_weight_porpotion_boxes: True
+
+# 便于做分组加权，可按需调整
+body_names: [
+  'pelvis',
+  'left_hip_pitch_link','left_hip_roll_link','left_hip_yaw_link','left_knee_link','left_ankle_pitch_link','left_ankle_roll_link',
+  'right_hip_pitch_link','right_hip_roll_link','right_hip_yaw_link','right_knee_link','right_ankle_pitch_link','right_ankle_roll_link',
+  'waist_yaw_link','waist_roll_link','torso_link',
+  'left_shoulder_pitch_link','left_shoulder_roll_link','left_shoulder_yaw_link','left_elbow_link',
+  'left_wrist_roll_link','left_wrist_pitch_link','left_wrist_yaw_link',
+  'right_shoulder_pitch_link','right_shoulder_roll_link','right_shoulder_yaw_link','right_elbow_link',
+  'right_wrist_roll_link','right_wrist_pitch_link','right_wrist_yaw_link'
+]
+
+limb_weight_group:
+  - [ 'left_hip_pitch_link','left_hip_roll_link','left_hip_yaw_link','left_knee_link','left_ankle_pitch_link','left_ankle_roll_link' ]
+  - [ 'right_hip_pitch_link','right_hip_roll_link','right_hip_yaw_link','right_knee_link','right_ankle_pitch_link','right_ankle_roll_link' ]
+  - [ 'pelvis','waist_yaw_link','waist_roll_link','torso_link' ]
+  - [ 'left_shoulder_pitch_link','left_shoulder_roll_link','left_shoulder_yaw_link','left_elbow_link','left_wrist_roll_link','left_wrist_pitch_link','left_wrist_yaw_link' ]
+  - [ 'right_shoulder_pitch_link','right_shoulder_roll_link','right_shoulder_yaw_link','right_elbow_link','right_wrist_roll_link','right_wrist_pitch_link','right_wrist_yaw_link' ]
+
+# 这 29 个顺序需与 XML 中各关节的含义一致
+dof_names: [
+  'left_hip_pitch_link','left_hip_roll_link','left_hip_yaw_link',
+  'left_knee_link','left_ankle_pitch_link','left_ankle_roll_link',
+  'right_hip_pitch_link','right_hip_roll_link','right_hip_yaw_link',
+  'right_knee_link','right_ankle_pitch_link','right_ankle_roll_link',
+  'waist_yaw_link','waist_roll_link','torso_link',
+  'left_shoulder_pitch_link','left_shoulder_roll_link','left_shoulder_yaw_link','left_elbow_link',
+  'left_wrist_roll_link','left_wrist_pitch_link','left_wrist_yaw_link',
+  'right_shoulder_pitch_link','right_shoulder_roll_link','right_shoulder_yaw_link','right_elbow_link',
+  'right_wrist_roll_link','right_wrist_pitch_link','right_wrist_yaw_link'
+]
+
+right_foot_name: 'r_foot_roll'   # 如需用踝部代替，也可改成 'right_ankle_roll_link'
+left_foot_name:  'l_foot_roll'   # 同上，或改 'left_ankle_roll_link'
+
+asset:
+  assetRoot: "./"
+  assetFileName: "description/robots/g1/g1_29dof_rev_1_0.xml"
+  urdfFileName:  "description/robots/g1/g1_29dof_rev_1_0.xml"
+
+# 给 SMPL/任务用的若干“虚拟端点”，29dof 里把手的父节点改到 wrist_yaw
+extend_config:
+  - joint_name: "left_hand_link"
+    parent_name: "left_wrist_yaw_link"
+    pos: [ 0.0415, 0.003, 0.0 ]   # 取自橡胶手心的几何中心附近
+    rot: [ 1.0, 0.0, 0.0, 0.0 ]
+  - joint_name: "right_hand_link"
+    parent_name: "right_wrist_yaw_link"
+    pos: [ 0.0415, -0.003, 0.0 ]
+    rot: [ 1.0, 0.0, 0.0, 0.0 ]
+  - joint_name: "head_link"
+    parent_name: "torso_link"
+    pos: [ 0.0, 0.0, 0.42 ]
+    rot: [ 1.0, 0.0, 0.0, 0.0 ]
+  - joint_name: "left_toe_link"
+    parent_name: "left_ankle_roll_link"
+    pos: [ 0.08, 0.0, -0.06 ]
+    rot: [ 1.0, 0.0, 0.0, 0.0 ]
+  - joint_name: "right_toe_link"
+    parent_name: "right_ankle_roll_link"
+    pos: [ 0.08, 0.0, -0.06 ]
+    rot: [ 1.0, 0.0, 0.0, 0.0 ]
+
+base_link: "torso_link"
+
+# SMPL 关节到机器人“关键点”的对应（与 23dof 一致，手腕 3DoF 不直接对应 SMPL 骨骼）
+joint_matches:
+  - [ "pelvis", "Pelvis" ]
+  - [ "left_hip_pitch_link", "L_Hip" ]
+  - [ "left_knee_link", "L_Knee" ]
+  - [ "left_ankle_roll_link", "L_Ankle" ]
+  - [ "right_hip_pitch_link", "R_Hip" ]
+  - [ "right_knee_link", "R_Knee" ]
+  - [ "right_ankle_roll_link", "R_Ankle" ]
+  - [ "left_shoulder_roll_link", "L_Shoulder" ]
+  - [ "left_elbow_link", "L_Elbow" ]
+  - [ "left_hand_link", "L_Hand" ]
+  - [ "right_shoulder_roll_link", "R_Shoulder" ]
+  - [ "right_elbow_link", "R_Elbow" ]
+  - [ "right_hand_link", "R_Hand" ]
+  - [ "head_link", "Head" ]
+  - [ "left_toe_link", "L_Toe" ]
+  - [ "right_toe_link", "R_Toe" ]
+
+smpl_pose_modifier:
+  - Pelvis:     "[np.pi/2, 0, np.pi/2]"
+  - L_Shoulder: "[0, 0, -np.pi/2]"
+  - R_Shoulder: "[0, 0,  np.pi/2]"
+  - L_Elbow:    "[0, -np.pi/2, 0]"
+  - R_Elbow:    "[0,  np.pi/2, 0]"

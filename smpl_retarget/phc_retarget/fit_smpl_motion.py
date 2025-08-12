@@ -11,6 +11,7 @@ from smpl_sim.poselib.skeleton.skeleton3d import SkeletonTree, SkeletonMotion, S
 from scipy.spatial.transform import Rotation as sRot
 import numpy as np
 import torch
+from hydra import utils
 from smpl_sim.smpllib.smpl_parser import (
     SMPL_Parser,
     SMPLH_Parser,
@@ -88,7 +89,7 @@ def process_motion(key_names, key_name_to_pkls, cfg):
     smpl_joint_pick_idx = [SMPL_BONE_ORDER_NAMES.index(j) for j in smpl_joint_pick]
 
     smpl_parser_n = SMPL_Parser(model_path="./smpl_model/smpl", gender="neutral")
-    shape_new, scale = joblib.load(f"./retargeted_motion_data/phc/shape_optimized_v1.pkl")
+    shape_new, scale = joblib.load(f"/home/cxd/code/PBHC/smpl_retarget/retargeted_motion_data/phc/shape_optimized_v1.pkl")
 
     all_data = {}
     pbar = tqdm(key_names, position=0, leave=True)
@@ -208,12 +209,27 @@ def process_motion(key_names, key_name_to_pkls, cfg):
 
 @hydra.main(version_base=None, config_path="../../description/robots/cfg", config_name="config")
 def main(cfg: DictConfig) -> None:
-    all_pkls = glob.glob("./motion_data/dataset/*.npz", recursive=True)
-    key_name_to_pkls = {"0-" + "_".join(data_path.split("/")[3:]).replace(".npz", ""): data_path for data_path in
-                        all_pkls}
-    key_names = ["0-" + "_".join(data_path.split("/")[3:]).replace(".npz", "") for data_path in all_pkls]
+    # all_pkls = glob.glob("./motion_data/dataset/*.npz", recursive=True)
+    # all_pkls = glob.glob("./AMASS/**/*.npz", recursive=True)  # 递归扫描
+
+    data_root = cfg.get("motion", "./AMASS")
+    data_root = utils.to_absolute_path(data_root)   # 适配 Hydra 的 chdir
+    # 递归扫描
+    all_pkls = glob.glob(os.path.join(data_root, "**", "*.npz"), recursive=True)
+    print(f"[INFO] searching under {data_root}, found {len(all_pkls)} npz files")
+
+    # key_name_to_pkls = {"0-" + "_".join(data_path.split("/")[3:]).replace(".npz", ""): data_path for data_path in
+    #                     all_pkls}
+    key_name_to_pkls = {
+        "0-" + "_".join(data_path.split("/")[2:]).replace(".npz", ""): data_path
+        for data_path in all_pkls
+    }
+    key_names = list(key_name_to_pkls.keys())
+    # key_names = ["0-" + "_".join(data_path.split("/")[3:]).replace(".npz", "") for data_path in all_pkls]
     if not cfg.get("fit_all", False):
-        key_names = ["0-motion"]
+        key_names = [key_names[0]]
+    else:
+        raise FileNotFoundError("fit_all is not implemented yet, please set it to False")
 
     from multiprocessing import Pool
     jobs = key_names

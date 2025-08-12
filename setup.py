@@ -35,7 +35,7 @@ setup(
         "toolz",
         # 'rerun-sdk==0.22.0',
         # 'trimesh',
-        # 'git+https://github.com/ZhengyiLuo/SMPLSim.git@master',
+        'smpl-sim @ git+https://github.com/ZhengyiLuo/SMPLSim.git@master',
         'typer',
         'dm_control',
         'loop_rate_limiters',

@@ -50,8 +50,8 @@ left_foot_name: 'l_foot_roll'
 
 asset:
   assetRoot: "./"
-  assetFileName: "../description/robots/g1/g1_23dof_lock_wrist_fitmotionONLY.xml"
-  urdfFileName: "../description/robots/g1/g1_23dof_lock_wrist_fitmotionONLY.xml"
+  assetFileName: "/home/cxd/code/PBHC/description/robots/g1/g1_23dof_lock_wrist_fitmotionONLY.xml"
+  urdfFileName: "/home/cxd/code/PBHC/description/robots/g1/g1_23dof_lock_wrist_fitmotionONLY.xml"
 
 extend_config:
   - joint_name: "left_hand_link"
