@@ -40,6 +40,11 @@
   </asset>
 
   <worldbody>
+    <!-- 障碍物定义 -->
+    <body name="obstacle" pos="-1.5 -0.5 0">
+        <geom type="box" size="0.4 0.5 0.4" rgba="1 0 0 1"/>
+    </body>
+
     <body name="pelvis" pos="0 0 0.793">
       <inertial pos="0 0 -0.07605" quat="1 0 -0.000399148 0" mass="3.813" diaginertia="0.010549 0.0093089 0.0079184"/>
       <joint name="floating_base_joint" type="free" limited="false" actuatorfrclimited="false"/>
@@ -275,7 +280,7 @@
   </sensor>
 
 
-  <!-- setup scene
+  <!-- setup scene -->
   <statistic center="1.0 0.7 1.0" extent="0.8"/>
   <visual>
     <headlight diffuse="0.6 0.6 0.6" ambient="0.1 0.1 0.1" specular="0.9 0.9 0.9"/>
@@ -290,5 +295,5 @@
   <worldbody>
     <light pos="1 0 3.5" dir="0 0 -1" directional="true"/>
     <geom name="floor" size="0 0 0.05" type="plane" material="groundplane"/>
-  </worldbody> -->
+  </worldbody>
 </mujoco>

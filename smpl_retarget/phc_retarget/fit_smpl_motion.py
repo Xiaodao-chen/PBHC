@@ -5,7 +5,7 @@ import pdb
 import os.path as osp
 
 sys.path.append(os.getcwd())
-
+from joblib import Parallel, delayed
 from smpl_sim.utils import torch_utils
 from smpl_sim.poselib.skeleton.skeleton3d import SkeletonTree, SkeletonMotion, SkeletonState
 from scipy.spatial.transform import Rotation as sRot
@@ -76,6 +76,8 @@ def foot_detect(positions, thres=0.002):
     feet_r = np.max(feet_r, axis=1, keepdims=True)
     return feet_l, feet_r
 
+smpl_parser_n = SMPL_Parser(model_path="./smpl_model/smpl", gender="neutral")
+shape_new, scale = joblib.load(f"/home/cxd/code/PBHC/smpl_retarget/retargeted_motion_data/phc/shape_optimized_v1.pkl")
 def process_motion(key_names, key_name_to_pkls, cfg):
     device = torch.device("cpu")
 
@@ -88,8 +90,6 @@ def process_motion(key_names, key_name_to_pkls, cfg):
     robot_joint_pick_idx = [robot_joint_names_augment.index(j) for j in robot_joint_pick]
     smpl_joint_pick_idx = [SMPL_BONE_ORDER_NAMES.index(j) for j in smpl_joint_pick]
 
-    smpl_parser_n = SMPL_Parser(model_path="./smpl_model/smpl", gender="neutral")
-    shape_new, scale = joblib.load(f"/home/cxd/code/PBHC/smpl_retarget/retargeted_motion_data/phc/shape_optimized_v1.pkl")
 
     all_data = {}
     pbar = tqdm(key_names, position=0, leave=True)
@@ -229,7 +229,8 @@ def main(cfg: DictConfig) -> None:
     if not cfg.get("fit_all", False):
         key_names = [key_names[0]]
     else:
-        raise FileNotFoundError("fit_all is not implemented yet, please set it to False")
+        # raise FileNotFoundError("fit_all is not implemented yet, please set it to False")
+        print(f"[INFO] fit_all=True, processing {len(key_names)} files...")
 
     from multiprocessing import Pool
     jobs = key_names
@@ -240,16 +241,14 @@ def main(cfg: DictConfig) -> None:
     if len(job_args) == 1:
         all_data = process_motion(key_names, key_name_to_pkls, cfg)
     else:
-        try:
-            pool = Pool(num_jobs)  # multi-processing
-            all_data_list = pool.starmap(process_motion, job_args)
-        except KeyboardInterrupt:
-            pool.terminate()
-            pool.join()
+        all_data_list = Parallel(n_jobs=num_jobs, verbose=10)(
+            delayed(process_motion)(job_chunk, key_name_to_pkls, cfg) for job_chunk in jobs
+        )
         all_data = {}
         for data_dict in all_data_list:
-            all_data.update(data_dict)
-    # import ipdb; ipdb.set_trace()
+            if data_dict:
+                all_data.update(data_dict)
+    import ipdb; ipdb.set_trace()
     if len(all_data) == 1:
         data_key = list(all_data.keys())[0]
         os.makedirs(f"./retargeted_motion_data/phc/g1", exist_ok=True)

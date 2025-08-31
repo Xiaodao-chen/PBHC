@@ -203,7 +203,6 @@ def main(cfg: DictConfig) -> None:
     resave = False
 
     humanoid_xml = "./description/robots/g1/g1_23dof_lock_wrist.xml"
-    terrain_model_path = "/home/cxd/code/PBHC/robot_motion_process/obstacle/box.xml"
     print(humanoid_xml)
 
     vis_smpl_global = False if 'vis_smpl' not in cfg else cfg.vis_smpl
@@ -227,14 +226,11 @@ def main(cfg: DictConfig) -> None:
         with torch.no_grad():
             fk_return = humanoid_fk.fk_batch(pose_aa, root_trans)
             joint_gt = fk_return.global_translation_extend[0]
-    # 这是机器人
+
     mj_model = mujoco.MjModel.from_xml_path(humanoid_xml)
     mj_data = mujoco.MjData(mj_model)
     mj_model.opt.timestep = dt
     mj_model_global = mj_model  # 给回调使用以动态更新 timestep
-
-    # terrain_model = mujoco.MjModel.from_xml_path(terrain_model_path)
-    # mj_data = mujoco.MjData(terrain_model)
 
     print("Init Pose: ", (np.array(np.concatenate(
         [curr_motion['root_trans_offset'][0], curr_motion['root_rot'][0][[3, 0, 1, 2]], curr_motion['dof'][0]]

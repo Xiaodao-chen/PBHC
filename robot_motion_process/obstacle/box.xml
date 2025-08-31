@@ -1,0 +1,13 @@
+<mujoco>
+    <worldbody>
+        <!-- 障碍物定义 -->
+        <body name="obstacle" pos="2 0 0">
+            <geom type="box" size="0.5 0.5 0.5" rgba="1 0 0 1"/>
+        </body>
+        
+        <!-- 其他模型 -->
+        <body name="robot" pos="0 0 0">
+            <geom type="sphere" size="0.2" rgba="0 0 1 1"/>
+        </body>
+    </worldbody>
+</mujoco>
