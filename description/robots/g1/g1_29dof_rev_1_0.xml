@@ -1,6 +1,7 @@
 <mujoco model="g1_29dof_rev_1_0">
   <compiler angle="radian" meshdir="./meshes"/>
 
+
   <asset>
     <mesh name="pelvis" file="pelvis.STL"/>
     <mesh name="pelvis_contour_link" file="pelvis_contour_link.STL"/>
@@ -40,11 +41,6 @@
   </asset>
 
   <worldbody>
-    <!-- 障碍物定义 -->
-    <body name="obstacle" pos="-1.5 -0.5 0">
-        <geom type="box" size="0.4 0.5 0.4" rgba="1 0 0 1"/>
-    </body>
-
     <body name="pelvis" pos="0 0 0.793">
       <inertial pos="0 0 -0.07605" quat="1 0 -0.000399148 0" mass="3.813" diaginertia="0.010549 0.0093089 0.0079184"/>
       <joint name="floating_base_joint" type="free" limited="false" actuatorfrclimited="false"/>
@@ -295,5 +291,11 @@
   <worldbody>
     <light pos="1 0 3.5" dir="0 0 -1" directional="true"/>
     <geom name="floor" size="0 0 0.05" type="plane" material="groundplane"/>
+  </worldbody>
+  <worldbody>
+          <!-- 障碍物定义 -->
+          <body name="obstacle" pos="-1.5 -0.5 0">
+              <geom type="box" size="0.4 0.5 0.4" rgba="1 0 0 1"/>
+          </body>
   </worldbody>
 </mujoco>
